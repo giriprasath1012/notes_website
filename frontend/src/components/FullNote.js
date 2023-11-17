@@ -19,11 +19,11 @@ const FullNote = () => {
 	const { id } = useParams();
 
 	const { isLoggedIn } = useContext(AuthContext);
-
+	
 	useEffect(() => {
 		if (isLoggedIn) getNote();
 	}, [isLoggedIn]);
-
+	
 	// Functions
 	const getNote = () => {
 		const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/notes/${id}`;

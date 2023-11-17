@@ -12,11 +12,12 @@ const Create = () => {
 	const history = useHistory();
 
 	const { isLoggedIn } = useContext(AuthContext);
-
+	
 	useEffect(() => {
 		if (isLoggedIn) setIsLoading(false);
 	}, [isLoggedIn]);
 
+	
 	const handleNewNote = () => {
 		if (title.trim() !== '' && content.trim !== '') {
 			const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/notes`;

@@ -5,46 +5,44 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
 const Register = () => {
-	// State Variables
-	const [username, setUsername] = useState('');
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [hint, setHint] = useState('');
+    // State Variables
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [hint, setHint] = useState('');
 
-	// Initialize history
-	const history = useHistory();
+    // Initialize history
+    const history = useHistory();
 
-	const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
-	// TODO: CHECK IF USER IS LOGGED IN ALREADY
-	useEffect(() => {
-		if (isLoggedIn) history.push('/');
-	}, [isLoggedIn]);
+    // Environment variables
+    const backendBaseUrl = 'http://localhost:5000'; // Set your backend base URL here
 
-	// Functions
-	const handleSubmit = () => {
-		// console.log(username, email, password);
+    // TODO: CHECK IF USER IS LOGGED IN ALREADY
+    useEffect(() => {
+        if (isLoggedIn) history.push('/');
+    }, [isLoggedIn]);
 
-		const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/users/register`;
-		const body = { username, emailId: email, password };
-		const headers = { 'Content-Type': 'application/json' };
-		// console.log(body);
+    // Functions
+    const handleSubmit = () => {
+        const url = `${backendBaseUrl}/users/register`;
+        const body = { username, emailId: email, password };
+        const headers = { 'Content-Type': 'application/json' };
 
-		// POST user data to /user/register on backend
-		axios
-			.post(url, body, { headers })
-			.then((res) => {
-				if (res.data.success) {
-					setHint(res.data.message);
-					history.push('/login');
-				}
-			})
-			.catch((err) => {
-				// console.log(err.response.data);
-				if (!err.response.data.success)
-					setHint('User validation failed. Input valid credentials');
-			});
-	};
+        axios
+            .post(url, body, { headers })
+            .then((res) => {
+                if (res.data.success) {
+                    setHint(res.data.message);
+                    history.push('/login');
+                }
+            })
+            .catch((err) => {
+                if (!err.response.data.success)
+                    setHint('User validation failed. Input valid credentials');
+            });
+    };
 
 	return (
 		<div className="h-screen bg-bg-black text-font-main font-Mulish sm:flex justify-center items-center">

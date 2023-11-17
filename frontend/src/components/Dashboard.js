@@ -1,58 +1,51 @@
-import Note from './Note';
+import { useState, useEffect, useContext } from 'react';
 import { TiDocumentAdd } from 'react-icons/ti';
 import { CgLogOut } from 'react-icons/cg';
 import { useHistory } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
 import { AuthContext } from '../context/AuthContext';
+import Note from './Note';
 
 const Dashboard = () => {
-	// State Variables
-	const [data, setData] = useState();
+	const [data, setData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState();
+	const [error, setError] = useState('');
 	const history = useHistory();
 
 	const { username, isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-
+	
 	useEffect(() => {
 		if (isLoggedIn) getNotes();
 	}, [isLoggedIn]);
 
-	// Functions
 	const getNotes = () => {
 		const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/notes`;
 		const options = {
 			withCredentials: true,
-			Credential: 'include',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		};
+
 		axios
 			.get(url, options)
 			.then((res) => {
-				console.log(res.data);
 				setData(res.data.notes);
 				setIsLoading(false);
 			})
 			.catch((error) => {
-				// redirect to 404
-				if (!error.response.data.success) {
-					console.log(error.response.data);
-
+				if (error.response && error.response.data && error.response.data.message) {
 					setError(error.response.data.message);
 				}
-				setData({});
 				setIsLoading(false);
 			});
 	};
+
 	const handleLogout = () => {
 		const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/users/logout`;
 		const options = {
 			withCredentials: true,
-			Credential: 'include',
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -61,7 +54,6 @@ const Dashboard = () => {
 		axios
 			.get(url, options)
 			.then((res) => {
-				console.log('Logged Out');
 				setIsLoggedIn(false);
 				history.push('/login');
 			})

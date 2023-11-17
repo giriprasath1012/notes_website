@@ -1,10 +1,10 @@
 {
   "name": "notes-backend",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "Nav",
@@ -26,5 +26,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "description": ""
 }

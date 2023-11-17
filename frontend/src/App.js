@@ -20,6 +20,8 @@ function App() {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const history = useHistory();
 
+	
+
 	useEffect(() => {
 		const URL = `${process.env.REACT_APP_BACKEND_BASE_URL}/users/is-logged`;
 		const options = {

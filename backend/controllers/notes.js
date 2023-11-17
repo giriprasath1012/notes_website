@@ -3,10 +3,11 @@ const Note = require('../models/Notes');
 exports.getNotes = async (req, res) => {
 	try {
 		const notes = await Note.find({ userId: req.user._id });
-		console.log(notes);
+
 		if (!notes || notes.length === 0) {
-			res.status(404).json({
+			return res.status(404).json({
 				success: false,
+				message: 'No notes found',
 			});
 		}
 
@@ -16,47 +17,41 @@ exports.getNotes = async (req, res) => {
 			notes,
 		});
 	} catch (error) {
-		res.status(404).json({
+		res.status(500).json({
 			success: false,
-			message: error.message,
+			message: 'Error retrieving notes',
+			error: error.message,
 		});
 	}
 };
 
 exports.postNote = async (req, res) => {
 	try {
-		let note = req.body;
-		note = { ...note, userId: req.user._id };
-
+		let note = { ...req.body, userId: req.user._id };
 		note = await Note.create(note);
 
-		if (!note || note.length === 0) {
-			res.status(404).json({
-				success: false,
-			});
-		}
-
-		res.status(200).json({
+		res.status(201).json({
 			success: true,
 			message: 'Note created',
 			note,
 		});
 	} catch (error) {
-		res.status(404).json({
+		res.status(500).json({
 			success: false,
-			message: error.message,
+			message: 'Error creating note',
+			error: error.message,
 		});
 	}
 };
 
-// ID
 exports.getNote = async (req, res) => {
 	try {
 		let note = await Note.findById(req.params.id);
 
-		if (!note || note.length === 0) {
+		if (!note) {
 			return res.status(404).json({
 				success: false,
+				message: 'Note not found',
 			});
 		}
 
@@ -66,15 +61,16 @@ exports.getNote = async (req, res) => {
 				note,
 			});
 		} else {
-			res.status(404).json({
+			res.status(403).json({
 				success: false,
-				message: 'You are not authorized to view this resource',
+				message: 'You are not authorized to view this note',
 			});
 		}
 	} catch (error) {
-		res.status(404).json({
+		res.status(500).json({
 			success: false,
-			message: error.message,
+			message: 'Error retrieving note',
+			error: error.message,
 		});
 	}
 };
@@ -83,33 +79,33 @@ exports.updateNote = async (req, res) => {
 	try {
 		let note = await Note.findById(req.params.id);
 
-		if (!note || note.length === 0) {
+		if (!note) {
 			return res.status(404).json({
 				success: false,
+				message: 'Note not found',
 			});
 		}
 
-		// console.log(note.userId.toString(), req.user._id.toString());
 		if (note.userId.toString() === req.user._id.toString()) {
 			note = await Note.findByIdAndUpdate(req.params.id, req.body, {
 				new: true,
 			});
+			res.status(200).json({
+				success: true,
+				message: 'Note updated',
+				note,
+			});
 		} else {
-			return res.status(404).json({
+			res.status(403).json({
 				success: false,
-				message: 'You are not authorized to change this resource',
+				message: 'You are not authorized to update this note',
 			});
 		}
-
-		res.status(200).json({
-			success: true,
-			message: 'Successfully updated',
-			note,
-		});
 	} catch (error) {
-		res.status(404).json({
+		res.status(500).json({
 			success: false,
-			message: error.message,
+			message: 'Error updating note',
+			error: error.message,
 		});
 	}
 };
@@ -118,29 +114,30 @@ exports.deleteNote = async (req, res) => {
 	try {
 		let note = await Note.findById(req.params.id);
 
-		if (!note || note.length === 0) {
+		if (!note) {
 			return res.status(404).json({
 				success: false,
+				message: 'Note not found',
 			});
 		}
 
 		if (note.userId.toString() === req.user._id.toString()) {
-			note = await Note.findByIdAndDelete(req.params.id);
+			await Note.findByIdAndDelete(req.params.id);
+			res.status(200).json({
+				success: true,
+				message: 'Note deleted',
+			});
 		} else {
-			return res.status(404).json({
+			res.status(403).json({
 				success: false,
-				message: 'You are not authorized to delete this resource',
+				message: 'You are not authorized to delete this note',
 			});
 		}
-
-		res.status(200).json({
-			success: true,
-			message: 'Successfully deleted',
-		});
 	} catch (error) {
-		res.status(404).json({
+		res.status(500).json({
 			success: false,
-			message: error.message,
+			message: 'Error deleting note',
+			error: error.message,
 		});
 	}
 };

@@ -1,8 +1,8 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const mongoose = require('mongoose');
 
 // Import middlewares
 const mongoSanitize = require('express-mongo-sanitize');
@@ -15,11 +15,6 @@ const cors = require('cors');
 const usersRoute = require('./routes/users');
 const notesRoute = require('./routes/notes');
 
-// Import DB config
-const connectDB = require('./config/connectDB');
-
-// Load env variables
-dotenv.config({ path: './config/.env' });
 
 // Auth
 require('./config/passport');
@@ -27,8 +22,18 @@ require('./config/passport');
 // Initialize app
 const app = express();
 
-// Connect mongo db
-connectDB();
+process.env.MONGO_DB_URI = 'mongodb://127.0.0.1:27017/notesproject';
+process.env.SESSION_SECRET = 'e419c0a23966e3c258653b53ed3847258266dbc8cc1a671ca7450ef98e011988';
+
+// Connect to MongoDB using Mongoose
+
+  mongoose.connect(process.env.MONGO_DB_URI)
+  .then(()=>{
+      console.log("mongodb connected");
+  })
+  .catch(()=>{
+      console.log('failed');
+  })
 
 // Session
 const sessionStore = new MongoStore({
@@ -66,7 +71,7 @@ app.use('/users', usersRoute);
 app.use('/notes', notesRoute);
 
 // Listen for requests
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 app.listen(PORT, () => {
 	console.log(`Listening for requests on ${PORT}`);
 });

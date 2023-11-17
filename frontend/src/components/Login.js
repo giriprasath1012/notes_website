@@ -15,7 +15,7 @@ const Login = () => {
 	const history = useHistory();
 
 	const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-
+	
 	// TODO: CHECK IF USER IS LOGGED IN ALREADY
 	useEffect(() => {
 		if (isLoggedIn) history.push('/');
@@ -23,8 +23,6 @@ const Login = () => {
 
 	// Functions
 	const handleSubmit = () => {
-		// console.log(email, password);
-
 		const url = `${process.env.REACT_APP_BACKEND_BASE_URL}/users/login`;
 		const body = { emailId: email, password };
 		const options = {
@@ -34,18 +32,20 @@ const Login = () => {
 				'Content-Type': 'application/json',
 			},
 		};
-
-		// POST user data to /user/register on backend
+	
 		axios
 			.post(url, body, options)
 			.then((res) => {
 				setIsLoading(true);
-
+	
 				if (res.data.success) {
 					console.log(res.data);
 					setHint(res.data.message);
 					setIsLoggedIn(true);
 					history.push('/');
+				} else {
+					setHint('Incorrect email or password. Please check your credentials.');
+					
 				}
 			})
 			.then(() => {
@@ -54,11 +54,12 @@ const Login = () => {
 			.catch((err) => {
 				setIsLoading(false);
 				setIsLoggedIn(false);
-				// console.log(err.response.data);
-				if (!err.response.data.success)
+				if (!err.response.data.success) {
 					setHint('Please input valid credentials');
+				}
 			});
 	};
+	
 	return (
 		<div className="h-screen bg-bg-black text-font-main font-Mulish sm:flex justify-center items-center">
 			<div className="p-4 flex flex-col justify-around h-full sm:w-10/12 md:w-7/12 lg:w-5/12 ">
